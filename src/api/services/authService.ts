@@ -10,6 +10,7 @@ export interface LoginResponse {
   access_token: string
   user_id: number
   role: string
+  tenant_id?: number
 }
 
 export const authService = {

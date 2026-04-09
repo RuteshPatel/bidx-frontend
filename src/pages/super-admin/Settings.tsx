@@ -300,6 +300,16 @@ export default function Settings() {
     },
     { key: 'event_name', header: 'Event Name' },
     {
+      key: 'players_per_team',
+      header: 'Players',
+      render: (s) => s.players_per_team || '—'
+    },
+    {
+      key: 'total_overs',
+      header: 'Overs',
+      render: (s) => s.total_overs || '—'
+    },
+    {
       key: 'purse_limit',
       header: 'Purse Limit',
       render: (s) => s.purse_limit ? `$${s.purse_limit.toLocaleString()}` : '—'

@@ -10,16 +10,16 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const setAuth = useAuthStore((s) => s.setAuth)
 
-  const [email, setEmail]       = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPw, setShowPw]     = useState(false)
-  const [loading, setLoading]   = useState(false)
+  const [showPw, setShowPw] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const ROLE_HOME: Record<string, string> = {
-    super_admin: '/admin/dashboard',
-    admin:       '/admin/dashboard',
-    owner:       '/owner/dashboard',
-    auctioneer:  '/auctioneer/panel',
+    super_admin: '/super-admin/dashboard',
+    admin: '/admin/dashboard',
+    owner: '/owner/dashboard',
+    auctioneer: '/auctioneer/panel',
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,7 +30,12 @@ export default function LoginPage() {
     try {
       const res = await authService.login({ email, password })
       setAuth(
-        { id: res.user_id, role: res.role as UserRole, email },
+        { 
+          id: res.user_id, 
+          role: res.role as UserRole, 
+          email,
+          tenant_id: res.tenant_id 
+        },
         res.access_token
       )
       toast.success('Welcome back!')

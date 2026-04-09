@@ -14,7 +14,7 @@ export default function Header({ title }: Props) {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
+
     if (savedTheme === 'light' || (!savedTheme && !prefersDark)) {
       setIsDark(false)
       document.documentElement.classList.remove('dark')
@@ -36,13 +36,22 @@ export default function Header({ title }: Props) {
     }
   }
 
+  const ROLE_LABELS: Record<string, string> = {
+    super_admin: 'Super Admin Panel',
+    admin: 'Tenant Admin Panel',
+    owner: 'Owners Panel',
+    auctioneer: 'Auctioneer Panel',
+  }
+
   return (
     <header className="flex h-14 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/80 dark:bg-stone-950/80 px-6 backdrop-blur-sm sticky top-0 z-10 transition-colors">
-      <h1 className="font-display text-sm font-semibold text-stone-700 dark:text-stone-300 tracking-wide uppercase">
-        {title}
-      </h1>
+      <div className="flex flex-col">
+        <span className="text-base font-bold text-brand-500 uppercase tracking-widest leading-none opacity-100 font-display">
+          {user?.role ? ROLE_LABELS[user.role] : 'Panel'}
+        </span>
+      </div>
       <div className="flex items-center gap-3">
-        <button 
+        <button
           onClick={toggleTheme}
           className="relative text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 transition-colors p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"
           title="Toggle Theme"

@@ -31,17 +31,18 @@ interface Tenant {
 export default function ManageTenants() {
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [isFetching, setIsFetching] = useState(true)
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
-  
+
   // Form state
   const [formData, setFormData] = useState({
     organization_name: '',
     full_name: '',
     email: '',
     phone: '',
+    password: '',
     address: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -80,6 +81,7 @@ export default function ManageTenants() {
       full_name: '',
       email: '',
       phone: '',
+      password: '',
       address: ''
     })
     setErrors({})
@@ -93,6 +95,7 @@ export default function ManageTenants() {
       full_name: tenant.full_name || '',
       email: tenant.email,
       phone: tenant.phone || '',
+      password: '',
       address: tenant.address || ''
     })
     setErrors({})
@@ -137,15 +140,25 @@ export default function ManageTenants() {
     const newErrors: Record<string, string> = {}
     if (!formData.organization_name.trim()) newErrors.organization_name = 'Organization Name is required'
     if (!formData.full_name.trim()) newErrors.full_name = 'Contact Full Name is required'
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Contact Email is required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email address format'
     }
-    
-    if (!formData.phone.trim()) newErrors.phone = 'Contact Phone is required'
-    
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Contact Phone is required'
+    } else if (!/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(formData.phone.replace(/[\s\-]/g, ''))) {
+      newErrors.phone = 'Invalid Indian mobile number'
+    }
+
+    if (!editingId && !formData.password.trim()) {
+      newErrors.password = 'Password is required'
+    } else if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -153,17 +166,21 @@ export default function ManageTenants() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
-    
+
     setIsLoading(true)
-    
+
     // Construct payload
     const payload = {
       organization_name: formData.organization_name,
       full_name: formData.full_name,
       email: formData.email,
       phone: formData.phone,
-      address: formData.address || null
+      address: formData.address || null,
+      password: formData.password || undefined
     }
+
+    // Filter out undefined password to avoid sending empty string if not changing
+    if (!payload.password) delete payload.password
 
     try {
       if (editingId) {
@@ -208,20 +225,21 @@ export default function ManageTenants() {
     { key: 'organization_name', header: 'Organization' },
     { key: 'full_name', header: 'Contact Name' },
     { key: 'email', header: 'Email' },
+    { key: 'phone', header: 'Phone' },
     {
       key: 'actions',
       header: '',
       className: 'text-right',
       render: (tenant) => (
         <div className="flex items-center justify-end gap-3 text-stone-400">
-          <button 
+          <button
             onClick={() => handleOpenEditModal(tenant)}
             className="hover:text-primary-500 transition-colors p-1"
             title="Edit Tenant"
           >
             <Edit2 className="w-4 h-4" />
           </button>
-          <button 
+          <button
             onClick={() => handleDeleteTenant(tenant.id)}
             className="hover:text-red-500 transition-colors p-1"
             title="Delete Tenant"
@@ -237,7 +255,7 @@ export default function ManageTenants() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-stone-900 dark:text-gray-100">Manage Tenants</h1>
-        <button 
+        <button
           onClick={handleOpenCreateModal}
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
@@ -257,9 +275,9 @@ export default function ManageTenants() {
       </div>
 
       {/* Create/Edit Tenant Modal */}
-      <Modal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         title={editingId ? "Edit Tenant" : "Create New Tenant"}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -287,6 +305,7 @@ export default function ManageTenants() {
               name="full_name"
               value={formData.full_name}
               onChange={handleInputChange}
+              placeholder="e.g. John Doe"
               className={`w-full bg-white dark:bg-stone-950 border ${errors.full_name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:border-brand-500 focus:ring-brand-500'} text-stone-900 dark:text-stone-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 transition-shadow`}
             />
             {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name}</p>}
@@ -301,6 +320,7 @@ export default function ManageTenants() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              placeholder="e.g. john@acme.com"
               className={`w-full bg-white dark:bg-stone-950 border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:border-brand-500 focus:ring-brand-500'} text-stone-900 dark:text-stone-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 transition-shadow`}
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -315,9 +335,26 @@ export default function ManageTenants() {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
+              placeholder="e.g. +91 98765 43210"
               className={`w-full bg-white dark:bg-stone-950 border ${errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:border-brand-500 focus:ring-brand-500'} text-stone-900 dark:text-stone-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 transition-shadow`}
             />
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+              Password {!editingId && <span className="text-red-500">*</span>}
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="••••••••"
+              className={`w-full bg-white dark:bg-stone-950 border ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-stone-200 dark:border-stone-800 focus:border-brand-500 focus:ring-brand-500'} text-stone-900 dark:text-stone-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 transition-shadow`}
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            {editingId && <p className="text-[10px] text-stone-500 mt-1">Leave blank to keep current password</p>}
           </div>
 
           <div>
@@ -328,6 +365,7 @@ export default function ManageTenants() {
               name="address"
               value={formData.address}
               onChange={handleInputChange}
+              placeholder="e.g. 123 Main St, Suite 400, New York, NY"
               rows={3}
               className="w-full bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-shadow resize-none"
             />
