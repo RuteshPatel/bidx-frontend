@@ -1,62 +1,102 @@
+import { useState, useEffect } from 'react'
 import Badge from '@/components/ui/Badge'
 import Table, { Column } from '@/components/ui/Table'
-
-interface TeamPlayer {
-  id: number
-  name: string
-  role: string
-  batting_style: string
-  bowling_style: string | null
-  price: number
-}
-
-const PLAYERS: TeamPlayer[] = [
-  { id: 1, name: 'Rohan Shah',    role: 'Batsman',      batting_style: 'Right-hand', bowling_style: null,          price: 1200000 },
-  { id: 2, name: 'Aman Trivedi',  role: 'All-Rounder',  batting_style: 'Right-hand', bowling_style: 'Medium Fast', price: 950000  },
-  { id: 3, name: 'Dev Mehta',     role: 'Batsman',      batting_style: 'Left-hand',  bowling_style: null,          price: 750000  },
-  { id: 4, name: 'Sameer Joshi',  role: 'Bowler',       batting_style: 'Right-hand', bowling_style: 'Fast',        price: 680000  },
-  { id: 5, name: 'Nisha Patel',   role: 'Wicket-Keeper',batting_style: 'Right-hand', bowling_style: null,          price: 520000  },
-]
+import { ownerPanelService, OwnerTeam } from '@/api/services/ownerPanelService'
+import { Player } from '@/api/services/playerService'
+import Loader from '@/components/ui/Loader'
+import toast from 'react-hot-toast'
 
 const roleColor: Record<string, 'blue' | 'orange' | 'green' | 'stone'> = {
   'Batsman': 'blue', 'Bowler': 'orange', 'All-Rounder': 'green', 'Wicket-Keeper': 'stone',
 }
 
 export default function MyTeamPlayers() {
-  const total = PLAYERS.reduce((s, p) => s + p.price, 0)
+  const [team, setTeam] = useState<OwnerTeam | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const columns: Column<TeamPlayer>[] = [
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchData(controller.signal)
+    return () => controller.abort()
+  }, [])
+
+  const fetchData = async (signal: AbortSignal) => {
+    setLoading(true)
+    try {
+      const data = await ownerPanelService.getMyTeam(signal)
+      setTeam(data)
+    } catch (err: any) {
+      if (err.name === 'CanceledError' || err.name === 'AbortError') return
+      toast.error('Failed to load team players')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) return <Loader />
+
+  const players = team?.players || []
+  const totalSpend = players.reduce((s, p) => s + (p.base_price || 0), 0)
+
+  const columns: Column<Player>[] = [
     {
-      key: 'name', header: 'Player',
+      key: 'user', header: 'Player',
       render: (p) => (
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-xs font-bold text-blue-400">
-            {p.name[0]}
+          <div className="h-9 w-9 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center overflow-hidden">
+            {p.user.profile_photo ? (
+              <img src={p.user.profile_photo} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-xs font-bold text-stone-500">{p.user.full_name[0]}</span>
+            )}
           </div>
-          <span className="font-medium text-stone-100">{p.name}</span>
+          <div className="flex flex-col">
+            <span className="font-bold text-stone-100 uppercase tracking-tight">{p.user.full_name}</span>
+            <span className="text-[10px] text-stone-500 font-medium uppercase">{p.user.email}</span>
+          </div>
         </div>
       )
     },
-    { key: 'role',          header: 'Role',         render: (p) => <Badge color={roleColor[p.role] ?? 'stone'}>{p.role}</Badge> },
-    { key: 'batting_style', header: 'Batting',      render: (p) => <span className="text-stone-400 text-xs">{p.batting_style}</span> },
-    { key: 'bowling_style', header: 'Bowling',      render: (p) => <span className="text-stone-400 text-xs">{p.bowling_style ?? '—'}</span> },
-    { key: 'price',         header: 'Bought At',    render: (p) => <span className="font-mono text-brand-400 font-semibold">₹{(p.price / 100000).toFixed(1)}L</span> },
+    {
+      key: 'playing_role',
+      header: 'Role',
+      render: (p) => <Badge color={roleColor[p.playing_role || ''] ?? 'stone'}>{p.playing_role || 'Not Set'}</Badge>
+    },
+    {
+      key: 'batting_style',
+      header: 'Batting',
+      render: (p) => <span className="text-stone-400 text-xs uppercase font-medium">{p.batting_style || '—'}</span>
+    },
+    {
+      key: 'bowling_style',
+      header: 'Bowling',
+      render: (p) => <span className="text-stone-400 text-xs uppercase font-medium">{p.bowling_style || '—'}</span>
+    },
+    {
+      key: 'base_price',
+      header: 'Bought At',
+      render: (p) => <span className="font-mono text-brand-400 font-bold">₹{((p.base_price || 0) / 100000).toFixed(1)}L</span>
+    },
   ]
 
   return (
-    <div className="space-y-5 animate-slide-up">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-slide-up">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-xl font-bold text-stone-100">My Team Players</h2>
-          <p className="text-stone-500 text-sm">{PLAYERS.length} players · Total spend: <span className="text-brand-400">₹{(total / 100000).toFixed(1)}L</span></p>
+          <h2 className="font-display text-2xl font-bold text-stone-100">{team?.name} Players</h2>
+          <p className="text-stone-500 text-sm mt-1">
+            {players.length} players acquired · Total spend: <span className="text-brand-400 font-bold">₹{(totalSpend / 100000).toFixed(1)}L</span>
+          </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-stone-500">Slots Remaining</p>
-          <p className="font-display text-2xl font-bold text-stone-100">{11 - PLAYERS.length}</p>
+        <div className="px-5 py-3 bg-stone-900/50 border border-stone-800 rounded-2xl text-right">
+          <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest leading-none mb-1">Squad Strength</p>
+          <p className="font-display text-2xl font-bold text-stone-100">{players.length}<span className="text-stone-700 mx-1">/</span>15</p>
         </div>
       </div>
 
-      <Table columns={columns} data={PLAYERS} keyExtractor={(p) => p.id} emptyText="No players acquired yet." />
+      <div className="bg-stone-900/20 border border-stone-800/50 rounded-2xl overflow-hidden shadow-2xl">
+        <Table columns={columns} data={players} keyExtractor={(p) => p.id} emptyText="No players acquired yet." />
+      </div>
     </div>
   )
 }

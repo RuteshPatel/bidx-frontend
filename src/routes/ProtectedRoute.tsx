@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children, allowedRoles }: Props) {
     return <Navigate to="/not-authorized" replace />
   }
 
-  // If children passed (wrapping a layout), render children + outlet
-  // If no children, render outlet directly
-  return children ? <>{children}<Outlet /></> : <Outlet />
+  // If children passed (wrapping a layout), render children.
+  // If no children, render outlet directly.
+  return children || <Outlet />
 }

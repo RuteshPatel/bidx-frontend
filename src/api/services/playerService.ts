@@ -42,16 +42,17 @@ export interface PlayerPayload {
 }
 
 export const playerService = {
-  list: async (tenant_id?: number, team_id?: number): Promise<Player[]> => {
+  list: async (tenant_id?: number, team_id?: number, signal?: AbortSignal): Promise<Player[]> => {
     const { data } = await client.get<Player[]>(ENDPOINTS.PLAYERS.LIST, {
-      params: { tenant_id, team_id }
+      params: { tenant_id, team_id },
+      signal
     })
     return data
   },
 
   create: async (payload: PlayerPayload): Promise<Player> => {
     const formData = new FormData()
-    
+
     // User fields
     if (payload.full_name) formData.append('full_name', payload.full_name)
     if (payload.email) formData.append('email', payload.email)
@@ -81,7 +82,7 @@ export const playerService = {
 
   update: async (id: number, payload: Partial<PlayerPayload>): Promise<Player> => {
     const formData = new FormData()
-    
+
     // User fields
     if (payload.full_name) formData.append('full_name', payload.full_name)
     if (payload.phone) formData.append('phone', payload.phone)

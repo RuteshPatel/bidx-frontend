@@ -64,19 +64,24 @@ export default function ManagePlayers() {
 
   useEffect(() => {
     if (user?.tenant_id) {
-      fetchData()
+      const controller = new AbortController()
+      fetchData(controller.signal)
+      return () => controller.abort()
     }
   }, [user?.tenant_id])
 
-  const fetchData = async () => {
+  const fetchData = async (signal?: AbortSignal) => {
     setLoading(true)
     try {
       const [playersData, teamsData] = await Promise.all([
-        playerService.list(user?.tenant_id).catch(() => []),
-        teamService.list(user?.tenant_id).catch(() => [])
+        playerService.list(user?.tenant_id, undefined, signal).catch(() => []),
+        teamService.list(user?.tenant_id, signal).catch(() => [])
       ])
       setPlayers(playersData)
       setTeams(teamsData)
+    } catch (err: any) {
+      if (err.name === 'CanceledError' || err.name === 'AbortError') return
+      console.error('Failed to fetch players/teams:', err)
     } finally {
       setLoading(false)
     }

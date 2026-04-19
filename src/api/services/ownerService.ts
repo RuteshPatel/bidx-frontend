@@ -31,9 +31,10 @@ export interface OwnerCreatePayload {
 }
 
 export const ownerService = {
-  list: async (tenant_id?: number): Promise<Owner[]> => {
+  list: async (tenant_id?: number, signal?: AbortSignal): Promise<Owner[]> => {
     const { data } = await client.get<Owner[]>(ENDPOINTS.OWNERS.LIST, {
-      params: { tenant_id }
+      params: { tenant_id },
+      signal
     })
     return data
   },

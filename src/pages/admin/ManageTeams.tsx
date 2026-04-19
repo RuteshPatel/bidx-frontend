@@ -49,19 +49,24 @@ export default function ManageTeams() {
 
   useEffect(() => {
     if (user?.tenant_id) {
-      fetchData()
+      const controller = new AbortController()
+      fetchData(controller.signal)
+      return () => controller.abort()
     }
   }, [user?.tenant_id])
 
-  const fetchData = async () => {
+  const fetchData = async (signal?: AbortSignal) => {
     setLoading(true)
     try {
       const [teamsData, ownersData] = await Promise.all([
-        teamService.list(user?.tenant_id).catch(() => []),
-        ownerService.list(user?.tenant_id).catch(() => [])
+        teamService.list(user?.tenant_id, signal).catch(() => []),
+        ownerService.list(user?.tenant_id, signal).catch(() => [])
       ])
       setTeams(teamsData)
       setOwners(ownersData)
+    } catch (err: any) {
+      if (err.name === 'CanceledError' || err.name === 'AbortError') return
+      console.error('Failed to fetch teams/owners:', err)
     } finally {
       setLoading(false)
     }

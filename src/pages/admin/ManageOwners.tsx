@@ -45,14 +45,19 @@ export default function ManageOwners() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    fetchData()
+    const controller = new AbortController()
+    fetchData(controller.signal)
+    return () => controller.abort()
   }, [])
 
-  const fetchData = async () => {
+  const fetchData = async (signal?: AbortSignal) => {
     setLoading(true)
     try {
-      const data = await ownerService.list(user?.tenant_id)
+      const data = await ownerService.list(user?.tenant_id, signal)
       setOwners(data)
+    } catch (err: any) {
+      if (err.name === 'CanceledError' || err.name === 'AbortError') return
+      console.error('Failed to fetch owners:', err)
     } finally {
       setLoading(false)
     }
