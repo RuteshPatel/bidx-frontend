@@ -22,6 +22,21 @@ export interface OwnerBudget {
   breakdown: BudgetBreakdown[]
 }
 
+export interface AuctionResultResponse {
+  id: number
+  player: {
+    id: number
+    playing_role: string | null
+    user: {
+      full_name: string
+      profile_photo: string | null
+    }
+  }
+  final_price: number
+  status: string // 'sold', etc.
+  created_at: string
+}
+
 export const ownerPanelService = {
   getMyTeam: async (signal?: AbortSignal): Promise<OwnerTeam> => {
     const { data } = await client.get<OwnerTeam>(ENDPOINTS.OWNER_PANEL.MY_TEAM, { signal })
@@ -33,8 +48,8 @@ export const ownerPanelService = {
     return data
   },
 
-  getBids: async (signal?: AbortSignal): Promise<Bid[]> => {
-    const { data } = await client.get<Bid[]>(ENDPOINTS.OWNER_PANEL.BID_HISTORY, { signal })
+  getBids: async (owner_id: number | string, signal?: AbortSignal): Promise<AuctionResultResponse[]> => {
+    const { data } = await client.get<AuctionResultResponse[]>(ENDPOINTS.AUCTIONS.OWNER_HISTORY(owner_id), { signal })
     return data
   }
 }

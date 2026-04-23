@@ -34,11 +34,11 @@ export const ENDPOINTS = {
 
   // Owners
   OWNERS: {
-    LIST: '/owner/',
-    CREATE: '/owner/',
-    BY_ID: (id: number) => `/owner/${id}/`,
-    UPDATE: (id: number) => `/owner/${id}/`,
-    DELETE: (id: number) => `/owner/${id}/`,
+    LIST: '/owner/get-all-owners',
+    CREATE: '/owner/create-owner/',
+    BY_ID: (id: number) => `/owner/get-owners-details/${id}`,
+    UPDATE: (id: number) => `/owner/update-owner/${id}`,
+    DELETE: (id: number) => `/owner/delete-owner/${id}`,
     BULK: '/owner/bulk/',
   },
 
@@ -52,6 +52,7 @@ export const ENDPOINTS = {
     CURRENT_BID: (id: number) => `/auctions/${id}/current-bid/`,
     BID_HISTORY: (id: number) => `/auctions/${id}/bids/`,
     ACCEPT_BID: (id: number) => `/auctions/${id}/accept/`,
+    OWNER_HISTORY: (id: number | string) => `/auction/owner/${id}`,
   },
 
   // Owner Panel (Not Tenant Admin)

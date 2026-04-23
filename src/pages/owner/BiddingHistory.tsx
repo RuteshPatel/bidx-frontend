@@ -1,34 +1,34 @@
 import { useState, useEffect } from 'react'
+import { useAuthStore } from '@/store/authStore'
 import Badge from '@/components/ui/Badge'
 import Table, { Column } from '@/components/ui/Table'
-import { ownerPanelService } from '@/api/services/ownerPanelService'
-import { Bid } from '@/api/services/auctionService'
+import { ownerPanelService, AuctionResultResponse } from '@/api/services/ownerPanelService'
 import Loader from '@/components/ui/Loader'
 import toast from 'react-hot-toast'
 import { History, CheckCircle2, XCircle, Clock } from 'lucide-react'
 
-// Enhanced interface for bidding history
-interface OwnerBidHistory extends Bid {
-  player_name?: string
-  player_role?: string
-  status?: 'won' | 'outbid' | 'active'
+const roleColor: Record<string, 'blue' | 'orange' | 'green' | 'stone'> = {
+  'Batsman': 'blue', 'Bowler': 'orange', 'All-Rounder': 'green', 'Wicket-Keeper': 'stone',
 }
 
 export default function BiddingHistory() {
-  const [bids, setBids] = useState<OwnerBidHistory[]>([])
+  const [bids, setBids] = useState<AuctionResultResponse[]>([])
   const [loading, setLoading] = useState(true)
+  const user = useAuthStore(s => s.user)
 
   useEffect(() => {
-    const controller = new AbortController()
-    fetchData(controller.signal)
-    return () => controller.abort()
-  }, [])
+    if (user?.id) {
+      const controller = new AbortController()
+      fetchData(user.id, controller.signal)
+      return () => controller.abort()
+    }
+  }, [user?.id])
 
-  const fetchData = async (signal: AbortSignal) => {
+  const fetchData = async (userId: number, signal: AbortSignal) => {
     setLoading(true)
     try {
-      const data = await ownerPanelService.getBids(signal)
-      setBids(data as OwnerBidHistory[])
+      const data = await ownerPanelService.getBids(userId, signal)
+      setBids(data)
     } catch (err: any) {
       if (err.name === 'CanceledError' || err.name === 'AbortError') return
       toast.error('Failed to load bidding history')
@@ -39,34 +39,38 @@ export default function BiddingHistory() {
 
   if (loading) return <Loader />
 
-  const won = bids.filter((b) => b.status === 'won')
+  const won = bids.filter((b) => b.status === 'sold')
   const outbid = bids.filter((b) => b.status === 'outbid')
-  const totalWon = won.reduce((s, b) => s + b.amount, 0)
+  const totalWon = won.reduce((s, b) => s + b.final_price, 0)
 
-  const columns: Column<OwnerBidHistory>[] = [
+  const columns: Column<AuctionResultResponse>[] = [
     {
-      key: 'player_name',
+      key: 'player',
       header: 'Player',
       render: (b) => (
-        <div className="flex flex-col">
-          <span className="font-bold text-stone-100 uppercase tracking-tight">{b.player_name || 'Unknown Player'}</span>
-          <span className="text-[10px] text-stone-600 font-bold uppercase tracking-widest">{b.player_role || 'No Role'}</span>
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center overflow-hidden">
+            {b.player.user.profile_photo ? (
+              <img src={b.player.user.profile_photo} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-xs font-bold text-stone-500">{b.player.user.full_name[0]}</span>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-stone-100 uppercase tracking-tight">{b.player.user.full_name}</span>
+          </div>
         </div>
       )
     },
     {
-      key: 'amount',
-      header: 'Bid Amount',
-      render: (b) => <span className="font-mono text-sm font-bold text-stone-200">₹{(b.amount / 100000).toFixed(1)}L</span>
+      key: 'final_price',
+      header: 'Winning Bid',
+      render: (b) => <span className="font-mono text-sm font-bold text-stone-200">₹{(b.final_price / 100000).toFixed(1)}L</span>
     },
     {
-      key: 'status',
-      header: 'Result',
-      render: (b) => {
-        if (b.status === 'won') return <Badge color="green" icon={<CheckCircle2 size={10} />}>Auction Won</Badge>
-        if (b.status === 'outbid') return <Badge color="red" icon={<XCircle size={10} />}>Outbid</Badge>
-        return <Badge color="blue" icon={<Clock size={10} />}>Active</Badge>
-      }
+      key: 'player',
+      header: 'Role',
+      render: (b) => <Badge color={roleColor[b.player.playing_role || ''] ?? 'stone'} variant="outline">{b.player.playing_role || 'No Role'}</Badge>
     },
     {
       key: 'created_at',

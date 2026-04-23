@@ -53,7 +53,7 @@ export default function ManageOwners() {
   const fetchData = async (signal?: AbortSignal) => {
     setLoading(true)
     try {
-      const data = await ownerService.list(user?.tenant_id, signal)
+      const data = await ownerService.list(signal)
       setOwners(data)
     } catch (err: any) {
       if (err.name === 'CanceledError' || err.name === 'AbortError') return
