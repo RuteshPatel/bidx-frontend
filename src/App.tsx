@@ -70,9 +70,14 @@ export default function App() {
         <Route path="/owner/bids" element={<SuspenseWrap><BiddingHistory /></SuspenseWrap>} />
       </Route>
 
-      {/* AUCTIONEER routes */}
-      <Route element={<ProtectedRoute allowedRoles={['auctioneer']}><AuctioneerLayout /></ProtectedRoute>}>
-        <Route path="/auctioneer/panel" element={<SuspenseWrap><LiveAuctionPanel /></SuspenseWrap>} />
+      {/* AUCTIONER routes */}
+      <Route element={<ProtectedRoute allowedRoles={['auctioner']}><AuctioneerLayout /></ProtectedRoute>}>
+        <Route path="/auctioner/bidding" element={<SuspenseWrap><LiveAuctionPanel /></SuspenseWrap>} />
+        <Route path="/auctioner/handler" element={<SuspenseWrap><LiveAuctionPanel /></SuspenseWrap>} />
+        <Route path="/auctioner/broadcast" element={<SuspenseWrap><LiveAuctionPanel /></SuspenseWrap>} />
+        <Route path="/auctioner/history" element={<SuspenseWrap><LiveAuctionPanel /></SuspenseWrap>} />
+        {/* Redirect old path to bidding */}
+        <Route path="/auctioner/panel" element={<Navigate to="/auctioner/bidding" replace />} />
       </Route>
 
       {/* Catch-all */}

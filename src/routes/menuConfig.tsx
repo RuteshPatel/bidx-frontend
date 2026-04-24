@@ -36,7 +36,10 @@ export const MENU_CONFIG: Record<UserRole, NavItem[]> = {
     { label: 'Budget', path: '/owner/budget', icon: Wallet },
     { label: 'Bid History', path: '/owner/bids', icon: History },
   ],
-  auctioneer: [
-    { label: 'Live Auction', path: '/auctioneer/panel', icon: Radio },
+  auctioner: [
+    { label: 'Bidding View', path: '/auctioner/bidding', icon: Gavel },
+    { label: 'Handler Control', path: '/auctioner/handler', icon: Settings },
+    { label: 'Live Broadcast', path: '/auctioner/broadcast', icon: Radio },
+    { label: 'Auction Log', path: '/auctioner/history', icon: History },
   ],
 }

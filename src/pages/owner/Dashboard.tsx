@@ -77,14 +77,14 @@ export default function OwnerDashboard() {
     <div className="space-y-6 animate-slide-up">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl font-bold text-stone-100">My Dashboard</h2>
+          <h2 className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100">My Dashboard</h2>
           <p className="text-stone-500 text-sm mt-1">
             <span className="text-brand-500 font-bold">{team?.name}</span> · Official Owner Panel
           </p>
         </div>
-        <div className="px-4 py-2 bg-stone-900/50 border border-stone-800 rounded-xl flex items-center gap-3">
+        <div className="px-4 py-2 bg-white dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-xl flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Auction Live</span>
+          <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-widest">Auction Live</span>
         </div>
       </div>
 
@@ -102,31 +102,31 @@ export default function OwnerDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="card border-stone-800/50">
+        <div className="card border-stone-200 dark:border-stone-800/50">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-display font-bold text-stone-200 text-xs uppercase tracking-widest flex items-center gap-2">
+            <h3 className="font-display font-bold text-stone-900 dark:text-stone-200 text-xs uppercase tracking-widest flex items-center gap-2">
               <Users size={14} className="text-brand-500" /> Recent Acquisitions
             </h3>
-            <span className="text-[10px] text-stone-600 font-bold uppercase">Latest 5</span>
+            <span className="text-[10px] text-stone-500 dark:text-stone-600 font-bold uppercase">Latest 5</span>
           </div>
           <div className="space-y-3">
             {recentAcquisitions.length > 0 ? (
               recentAcquisitions.map((p) => (
-                <div key={p.id} className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-stone-900/30 border border-transparent hover:border-stone-800 transition-all group">
+                <div key={p.id} className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-stone-50 dark:bg-stone-900/30 border border-transparent hover:border-stone-200 dark:hover:border-stone-800 transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center overflow-hidden">
+                    <div className="h-9 w-9 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-center overflow-hidden">
                       {p.user.profile_photo ? (
                         <img src={p.user.profile_photo} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-xs font-bold text-stone-500">{p.user.full_name[0]}</span>
+                        <span className="text-xs font-bold text-stone-400 dark:text-stone-500">{p.user.full_name[0]}</span>
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-stone-200 group-hover:text-brand-400 transition-colors uppercase tracking-tight">{p.user.full_name}</p>
+                      <p className="text-sm font-bold text-stone-900 dark:text-stone-200 group-hover:text-brand-500 dark:group-hover:text-brand-400 transition-colors uppercase tracking-tight">{p.user.full_name}</p>
                       <p className="text-[10px] text-stone-500 font-medium uppercase tracking-wider">{p.playing_role}</p>
                     </div>
                   </div>
-                  <span className="font-mono text-brand-400 text-sm font-bold">₹{((p.base_price || 0) / 100000).toFixed(1)}L</span>
+                  <span className="font-mono text-brand-600 dark:text-brand-400 text-sm font-bold">₹{((p.base_price || 0) / 100000).toFixed(1)}L</span>
                 </div>
               ))
             ) : (
@@ -137,12 +137,12 @@ export default function OwnerDashboard() {
           </div>
         </div>
 
-        <div className="card border-stone-800/50">
+        <div className="card border-stone-200 dark:border-stone-800/50">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-display font-bold text-stone-200 text-xs uppercase tracking-widest flex items-center gap-2">
+            <h3 className="font-display font-bold text-stone-900 dark:text-stone-200 text-xs uppercase tracking-widest flex items-center gap-2">
               <TrendingUp size={14} className="text-emerald-500" /> Budget Breakdown
             </h3>
-            <span className="text-[10px] text-emerald-500/50 font-bold uppercase tracking-widest">{(((budget?.spent_amount || 0) / (budget?.total_purse || 1)) * 100).toFixed(0)}% Used</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-500/50 font-bold uppercase tracking-widest">{(((budget?.spent_amount || 0) / (budget?.total_purse || 1)) * 100).toFixed(0)}% Used</span>
           </div>
           <div className="space-y-5">
             {budget?.breakdown && budget.breakdown.length > 0 ? (
@@ -151,13 +151,13 @@ export default function OwnerDashboard() {
                   <div className="flex justify-between items-end">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em]">{item.role}</span>
-                      <span className="text-[9px] text-stone-600 font-bold">{item.filled_slots} / {item.total_slots} Slots Filled</span>
+                      <span className="text-[9px] text-stone-400 dark:text-stone-600 font-bold">{item.filled_slots} / {item.total_slots} Slots Filled</span>
                     </div>
-                    <span className="text-stone-300 font-mono text-xs font-bold">₹{(item.spent / 100000).toFixed(1)}L</span>
+                    <span className="text-stone-900 dark:text-stone-300 font-mono text-xs font-bold">₹{(item.spent / 100000).toFixed(1)}L</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-stone-900 border border-stone-800/50 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800/50 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                      className="h-full rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.3)]"
                       style={{ width: `${(item.filled_slots / item.total_slots) * 100}%` }}
                     />
                   </div>

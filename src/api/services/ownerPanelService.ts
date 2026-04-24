@@ -24,16 +24,9 @@ export interface OwnerBudget {
 
 export interface AuctionResultResponse {
   id: number
-  player: {
-    id: number
-    playing_role: string | null
-    user: {
-      full_name: string
-      profile_photo: string | null
-    }
-  }
+  player: Player
   final_price: number
-  status: string // 'sold', etc.
+  status: string // 'sold', 'outbid', etc.
   created_at: string
 }
 

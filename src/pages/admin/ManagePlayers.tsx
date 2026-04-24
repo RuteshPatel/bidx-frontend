@@ -211,16 +211,16 @@ export default function ManagePlayers() {
       header: 'Player',
       render: (p) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
             {p.user.profile_photo ? (
               <img src={p.user.profile_photo} alt="" className="w-full h-full object-cover" />
             ) : (
-              <UserIcon size={18} className="text-stone-600" />
+              <UserIcon size={18} className="text-stone-400 dark:text-stone-600" />
             )}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="font-bold text-stone-100 truncate">{p.user.full_name}</span>
-            <span className="text-[10px] text-stone-500 truncate">{p.user.email}</span>
+            <span className="font-bold text-stone-900 dark:text-stone-100 truncate">{p.user.full_name}</span>
+            <span className="text-[10px] text-stone-600 dark:text-stone-500 truncate">{p.user.email}</span>
           </div>
         </div>
       )
@@ -239,8 +239,8 @@ export default function ManagePlayers() {
       header: 'Technique',
       render: (p) => (
         <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] text-stone-400 capitalize">{p.batting_style || 'Not Set'}</span>
-          <span className="text-[10px] text-stone-500 capitalize">{p.bowling_style || 'Not Set'}</span>
+          <span className="text-[10px] text-stone-600 dark:text-stone-400 capitalize">{p.batting_style || 'Not Set'}</span>
+          <span className="text-[10px] text-stone-500 dark:text-stone-500 capitalize">{p.bowling_style || 'Not Set'}</span>
         </div>
       )
     },
@@ -260,10 +260,10 @@ export default function ManagePlayers() {
         const team = teams.find(t => t.id === p.team_id)
         return team ? (
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded overflow-hidden bg-stone-800 border border-stone-700">
+            <div className="w-5 h-5 rounded overflow-hidden bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
               {team.logo && <img src={team.logo} className="w-full h-full object-cover" />}
             </div>
-            <span className="text-xs text-stone-300">{team.name}</span>
+            <span className="text-xs text-stone-700 dark:text-stone-300">{team.name}</span>
           </div>
         ) : (
           <Badge color="stone">Unsold</Badge>
@@ -290,7 +290,7 @@ export default function ManagePlayers() {
     <div className="space-y-6 animate-slide-up">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl font-bold text-stone-100">Players</h2>
+          <h2 className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100">Players</h2>
           <p className="text-stone-500 text-sm">Manage cricketing profiles and player registrations</p>
         </div>
         <div className="flex gap-3">
@@ -306,7 +306,7 @@ export default function ManagePlayers() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search name, email, or role..."
-            className="w-full bg-stone-900 border border-stone-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-200 placeholder-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all shadow-inner"
+            className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-900 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all shadow-sm"
           />
         </div>
 
@@ -314,7 +314,7 @@ export default function ManagePlayers() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-stone-900 border border-stone-800 rounded-xl px-4 py-2.5 text-sm text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 appearance-none cursor-pointer min-w-[140px]"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2.5 text-sm text-stone-700 dark:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 appearance-none cursor-pointer min-w-[140px]"
           >
             <option value="">All Roles</option>
             <option value="Batsman">Batsman</option>
@@ -326,7 +326,7 @@ export default function ManagePlayers() {
           <select
             value={teamFilter}
             onChange={(e) => setTeamFilter(e.target.value)}
-            className="bg-stone-900 border border-stone-800 rounded-xl px-4 py-2.5 text-sm text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 appearance-none cursor-pointer min-w-[140px]"
+            className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2.5 text-sm text-stone-700 dark:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 appearance-none cursor-pointer min-w-[140px]"
           >
             <option value="">All Teams</option>
             <option value="unsold">Unsold Only</option>
@@ -353,11 +353,11 @@ export default function ManagePlayers() {
           {/* Profile Photo Section */}
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-stone-900 border-2 border-stone-800 flex items-center justify-center overflow-hidden ring-4 ring-stone-900/50 shadow-2xl transition-all group-hover:border-brand-500/30">
+              <div className="w-24 h-24 rounded-full bg-stone-50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 flex items-center justify-center overflow-hidden ring-4 ring-stone-100 dark:ring-stone-900/50 shadow-2xl transition-all group-hover:border-brand-500/30">
                 {previewUrl ? (
                   <img src={previewUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <UserIcon size={36} className="text-stone-800" />
+                  <UserIcon size={36} className="text-stone-300 dark:text-stone-800" />
                 )}
                 <div className="absolute inset-0 bg-stone-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <button
@@ -396,7 +396,7 @@ export default function ManagePlayers() {
                     value={form.full_name}
                     onChange={(e) => setForm(f => ({ ...f, full_name: e.target.value }))}
                     placeholder="e.g. Virat Kohli"
-                    className="w-full bg-stone-950 border border-stone-800 rounded-xl pl-11 pr-4 py-3 text-sm text-stone-100 placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
+                    className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl pl-11 pr-4 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-300 dark:placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
                   />
                 </div>
               </div>
@@ -426,7 +426,7 @@ export default function ManagePlayers() {
                       value={form.password}
                       onChange={(e) => setForm(f => ({ ...f, password: e.target.value }))}
                       placeholder="Minimum 6 characters"
-                      className="w-full bg-stone-950 border border-stone-800 rounded-xl pl-11 pr-4 py-3 text-sm text-stone-100 placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
+                      className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl pl-11 pr-4 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-300 dark:placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
                     />
                   </div>
                 </div>
@@ -529,7 +529,7 @@ export default function ManagePlayers() {
                     type="number"
                     value={form.base_price}
                     onChange={(e) => setForm(f => ({ ...f, base_price: Number(e.target.value) }))}
-                    className="w-full bg-stone-950 border border-stone-800 rounded-xl pl-10 pr-4 py-3 text-sm font-mono text-brand-400 placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
+                    className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl pl-10 pr-4 py-3 text-sm font-mono text-brand-600 dark:text-brand-400 placeholder-stone-300 dark:placeholder-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/40 transition-all"
                   />
                   <IndianRupee size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
                 </div>

@@ -19,7 +19,7 @@ export default function LoginPage() {
     super_admin: '/super-admin/dashboard',
     admin: '/admin/dashboard',
     owner: '/owner/dashboard',
-    auctioneer: '/auctioneer/panel',
+    auctioner: '/auctioner/panel',
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,17 +29,19 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const res = await authService.login({ email, password })
+      const normalizedRole = res.role.toLowerCase() as UserRole
+      
       setAuth(
         { 
           id: res.user_id, 
-          role: res.role as UserRole, 
+          role: normalizedRole, 
           email,
           tenant_id: res.tenant_id 
         },
         res.access_token
       )
       toast.success('Welcome back!')
-      navigate(ROLE_HOME[res.role] ?? '/')
+      navigate(ROLE_HOME[normalizedRole] ?? '/')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       toast.error(msg ?? 'Login failed')

@@ -51,7 +51,7 @@ export default function AdminDashboard() {
     <div className="space-y-6 animate-slide-up">
       {/* Welcome */}
       <div>
-        <h2 className="font-display text-2xl font-bold text-stone-100">
+        <h2 className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100">
           {getGreeting()}, {user?.email?.split('@')[0] || 'Admin'} 👋
         </h2>
         <p className="text-stone-500 text-sm mt-1">
@@ -84,8 +84,8 @@ export default function AdminDashboard() {
         {/* Recent activity */}
         <div className="card">
           <div className="flex items-center gap-2 mb-4">
-            <Activity size={15} className="text-brand-400" />
-            <h3 className="font-display font-semibold text-stone-200 text-sm">Recent Activity</h3>
+            <Activity size={15} className="text-brand-500 dark:text-brand-400" />
+            <h3 className="font-display font-semibold text-stone-900 dark:text-stone-200 text-sm">Recent Activity</h3>
           </div>
           <div className="space-y-3">
             {data?.recent_activity?.length ? (
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
                 <div key={a.id} className="flex items-start gap-3">
                   <div className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${typeColor[a.type] || 'bg-stone-500'}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-stone-300 leading-snug">{a.event}</p>
+                    <p className="text-sm text-stone-600 dark:text-stone-300 leading-snug">{a.event}</p>
                   </div>
                   <span className="text-[11px] text-stone-600 flex-shrink-0 flex items-center gap-1">
                     <Clock size={11} /> {a.time || 'recent'}
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
 
         {/* Quick status */}
         <div className="card">
-          <h3 className="font-display font-semibold text-stone-200 text-sm mb-4">Auction Status</h3>
+          <h3 className="font-display font-semibold text-stone-900 dark:text-stone-200 text-sm mb-4">Auction Status</h3>
           <div className="space-y-3">
             {[
               { 
@@ -132,8 +132,8 @@ export default function AdminDashboard() {
             ].map((item) => (
               <div key={item.label}>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-stone-400">{item.label}</span>
-                  <span className="text-stone-300 font-mono">{item.val}/{item.total}</span>
+                  <span className="text-stone-500 dark:text-stone-400">{item.label}</span>
+                  <span className="text-stone-900 dark:text-stone-300 font-mono">{item.val}/{item.total}</span>
                 </div>
                 <div className="h-1.5 rounded-full bg-stone-800 overflow-hidden">
                   <div

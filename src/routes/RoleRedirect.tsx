@@ -5,11 +5,12 @@ const ROLE_HOME: Record<string, string> = {
   super_admin: '/super-admin/dashboard',
   admin:       '/admin/dashboard',
   owner:       '/owner/dashboard',
-  auctioneer:  '/auctioneer/panel',
+  auctioner:   '/auctioner/panel',
 }
 
 export default function RoleRedirect() {
   const role = useAuthStore((s) => s.user?.role)
-  const dest = role ? (ROLE_HOME[role] ?? '/login') : '/login'
+  const normalizedRole = role?.toLowerCase()
+  const dest = normalizedRole ? (ROLE_HOME[normalizedRole] ?? '/login') : '/login'
   return <Navigate to={dest} replace />
 }

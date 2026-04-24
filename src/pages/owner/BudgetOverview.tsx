@@ -40,25 +40,25 @@ export default function BudgetOverview() {
     <div className="space-y-6 animate-slide-up">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl font-bold text-stone-100 uppercase tracking-tight">Budget Overview</h2>
+          <h2 className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100 uppercase tracking-tight">Budget Overview</h2>
           <p className="text-stone-500 text-sm mt-1">Real-time expenditure and wallet tracking</p>
         </div>
-        <div className="px-4 py-2 bg-stone-900 shadow-xl border border-stone-800 rounded-xl flex items-center gap-3">
+        <div className="px-4 py-2 bg-white dark:bg-stone-900 shadow-xl border border-stone-200 dark:border-stone-800 rounded-xl flex items-center gap-3">
           <TrendingDown size={14} className="text-brand-500" />
-          <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Live Updates</span>
+          <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-widest">Live Updates</span>
         </div>
       </div>
 
       {/* Big purse card */}
-      <div className="card shadow-2xl border-stone-800/50 relative overflow-hidden group">
+      <div className="card shadow-2xl border-stone-200 dark:border-stone-800/50 relative overflow-hidden group">
         <div className="absolute -right-12 -top-12 h-40 w-40 bg-brand-500/5 rounded-full blur-3xl group-hover:bg-brand-500/10 transition-all duration-700" />
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 relative z-10">
           <div>
             <p className="text-[10px] text-stone-500 font-bold uppercase tracking-[0.2em] mb-2">Total Purse Allotted</p>
-            <p className="font-display text-5xl font-bold text-stone-100 tracking-tighter">₹{(totalPurse / 100000).toFixed(0)}L</p>
+            <p className="font-display text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tighter">₹{(totalPurse / 100000).toFixed(0)}L</p>
           </div>
-          <div className="bg-stone-900/50 p-6 rounded-2xl border border-stone-800/50 flex flex-col items-end">
+          <div className="bg-stone-50 dark:bg-stone-900/50 p-6 rounded-2xl border border-stone-100 dark:border-stone-800/50 flex flex-col items-end">
             <p className="text-[10px] text-stone-500 font-bold uppercase tracking-widest mb-1.5 flex items-center gap-2">
               <IndianRupee size={10} className="text-emerald-500" /> Remaining Balance
             </p>
@@ -68,7 +68,7 @@ export default function BudgetOverview() {
 
         {/* Progress bar */}
         <div className="space-y-3 relative z-10">
-          <div className="h-4 bg-stone-900 rounded-full overflow-hidden border border-stone-800 shadow-inner p-0.5">
+          <div className="h-4 bg-stone-100 dark:bg-stone-900 rounded-full overflow-hidden border border-stone-200 dark:border-stone-800 shadow-inner p-0.5">
             <div
               className="h-full bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(249,115,22,0.4)]"
               style={{ width: `${pct}%` }}
@@ -87,18 +87,18 @@ export default function BudgetOverview() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {budget?.breakdown && budget.breakdown.length > 0 ? (
           budget.breakdown.map((b, i) => (
-            <div key={b.role} className="card border-stone-800/50 hover:border-stone-700 transition-all group cursor-default">
+            <div key={b.role} className="card border-stone-200 dark:border-stone-800/50 hover:border-brand-500/20 transition-all group cursor-default">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className={`h-2.5 w-2.5 rounded-full ${colors[i % colors.length]}`} />
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{b.role}</span>
+                  <span className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-widest">{b.role}</span>
                 </div>
-                <div className="px-2 py-0.5 rounded bg-stone-900 text-[9px] font-bold text-stone-600 uppercase tracking-widest">
+                <div className="px-2 py-0.5 rounded bg-stone-100 dark:bg-stone-900 text-[9px] font-bold text-stone-500 dark:text-stone-600 uppercase tracking-widest">
                   {b.filled_slots} / {b.total_slots}
                 </div>
               </div>
-              <p className="font-display text-2xl font-bold text-stone-100 tracking-tight">₹{(b.spent / 100000).toFixed(1)}L</p>
-              <div className="mt-4 h-1 bg-stone-900 rounded-full overflow-hidden">
+              <p className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">₹{(b.spent / 100000).toFixed(1)}L</p>
+              <div className="mt-4 h-1 bg-stone-50 dark:bg-stone-900 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${colors[i % colors.length]} group-hover:opacity-80 transition-all duration-700`}
                   style={{ width: `${(b.spent / Math.max(spent, 1)) * 100}%` }}

@@ -1,25 +1,15 @@
-import { Outlet, useLocation } from 'react-router-dom'
-import Sidebar from '@/components/layout/Sidebar'
+import { Outlet } from 'react-router-dom'
 import Header from '@/components/layout/Header'
 
-const pageTitles: Record<string, string> = {
-  '/owner/dashboard': 'Dashboard',
-  '/owner/team':      'My Team',
-  '/owner/budget':    'Budget Overview',
-  '/owner/bids':      'Bid History',
-}
-
 export default function OwnerLayout() {
-  const { pathname } = useLocation()
   return (
-    <div className="flex h-screen overflow-hidden bg-surface-950">
-      <Sidebar accentColor="#3b82f6" />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header title={pageTitles[pathname]} />
-        <main className="flex-1 overflow-y-auto p-6 animate-fade-in">
+    <div className="flex h-screen flex-col bg-stone-50 dark:bg-surface-950 transition-colors duration-500 overflow-hidden">
+      <Header />
+      <main className="flex-1 overflow-y-auto p-6 animate-fade-in custom-scrollbar">
+        <div className="max-w-7xl mx-auto w-full h-full">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }
