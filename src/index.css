@@ -18,7 +18,12 @@
     margin: 0;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Syne', sans-serif;
   }
 
@@ -26,12 +31,15 @@
     width: 4px;
     height: 4px;
   }
+
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
+
   ::-webkit-scrollbar-thumb {
     @apply bg-stone-300 dark:bg-stone-700 rounded-full;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-stone-400 dark:bg-stone-500;
   }
@@ -39,8 +47,7 @@
 
 @layer components {
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-stone-600 dark:text-stone-400
-           hover:text-stone-900 dark:hover:text-stone-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-150 cursor-pointer;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-150 cursor-pointer;
   }
 
   .sidebar-link.active {
@@ -61,24 +68,52 @@
   }
 
   @keyframes stamp {
-    0% { opacity: 0; transform: scale(5) rotate(-45deg); }
-    50% { opacity: 1; transform: scale(1) rotate(-25deg); }
-    60% { transform: scale(1.1) rotate(-25deg); }
-    100% { transform: scale(1) rotate(-25deg); }
+    0% {
+      opacity: 0;
+      transform: scale(5) rotate(-45deg);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1) rotate(-25deg);
+    }
+
+    60% {
+      transform: scale(1.1) rotate(-25deg);
+    }
+
+    100% {
+      transform: scale(1) rotate(-25deg);
+    }
   }
 
   @keyframes confetti-fall {
-    0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    0% {
+      transform: translateY(-100%) rotate(0deg);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
   }
 
   .animate-stamp {
     animation: stamp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   }
 
-  .animate-confetti-1 { animation: confetti-fall 3s linear infinite; }
-  .animate-confetti-2 { animation: confetti-fall 4s linear 0.5s infinite; }
-  .animate-confetti-3 { animation: confetti-fall 2.5s linear 0.2s infinite; }
+  .animate-confetti-1 {
+    animation: confetti-fall 3s linear infinite;
+  }
+
+  .animate-confetti-2 {
+    animation: confetti-fall 4s linear 0.5s infinite;
+  }
+
+  .animate-confetti-3 {
+    animation: confetti-fall 2.5s linear 0.2s infinite;
+  }
 
   .stat-card {
     @apply card flex flex-col gap-2;

@@ -53,6 +53,7 @@ export const ENDPOINTS = {
     BID_HISTORY: (id: number) => `/auctions/${id}/bids/`,
     ACCEPT_BID: (id: number) => `/auctions/${id}/accept/`,
     OWNER_HISTORY: (id: number | string) => `/auction/owner/${id}`,
+    STREAM: (id: number) => `/auction/stream/${id}`,
   },
 
   // Owner Panel (Not Tenant Admin)

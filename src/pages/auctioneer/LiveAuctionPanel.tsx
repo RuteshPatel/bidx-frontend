@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import ReactPlayer from 'react-player'
+import { auctionService } from '@/api/services/auctionService'
 import {
 	TrendingUp,
 	Clock,
@@ -352,60 +355,91 @@ function HandlerControl({ player, currentBid, leadingTeam, status, handleIncreme
 }
 
 function BroadcastView({ player, currentBid, leadingTeam, status, fmt }: any) {
+	const [streamData, setStreamData] = useState<{ is_live: boolean; playback_url: string } | null>(null)
+	const [error, setError] = useState(false)
+
+	useEffect(() => {
+		// As per instructions, default to auction_id 1 for now
+		const auctionId = 1
+		auctionService.getStream(auctionId)
+			.then(data => {
+				setStreamData(data)
+				setError(false)
+			})
+			.catch(err => {
+				console.error("Failed to fetch stream data:", err)
+				setError(true)
+			})
+	}, [])
+
 	return (
 		<div className="h-full relative bg-stone-950 rounded-[3rem] overflow-hidden group">
-			{/* Mock Streaming Feed */}
+			{/* Streaming Feed */}
 			<div className="absolute inset-0 bg-stone-900 flex items-center justify-center">
-				<div className="flex flex-col items-center gap-4 text-stone-800">
-					<Video size={80} strokeWidth={1} />
-					<span className="font-display text-2xl font-black uppercase italic tracking-widest opacity-20">No Feed Detected</span>
-				</div>
-				{/* Simulated Camera Overlay Details */}
-				<div className="absolute top-10 left-10 flex items-center gap-4">
-					<div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full animate-pulse shadow-lg">
-						<div className="h-2 w-2 bg-white rounded-full" />
-						<span className="text-[10px] font-black text-white tracking-widest">LIVE</span>
+				{streamData?.is_live && streamData?.playback_url && !error ? (
+					<ReactPlayer
+						url={streamData.playback_url}
+						playing
+						muted
+						width="100%"
+						height="100%"
+						style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover' }}
+						onError={() => setError(true)}
+					/>
+				) : (
+					<div className="flex flex-col items-center gap-4 text-stone-800">
+						<Video size={80} strokeWidth={1} />
+						<span className="font-display text-2xl font-black uppercase italic tracking-widest opacity-20">
+							{error ? 'Stream Error' : 'No Feed Detected'}
+						</span>
 					</div>
-					<span className="text-xs font-mono text-stone-600 uppercase">Input: Cam-01</span>
+				)}
+				{/* Simulated Camera Overlay Details */}
+				<div className="absolute top-10 left-10 flex items-center gap-4 z-10">
+					<div className={`flex items-center gap-2 px-3 py-1 rounded-full animate-pulse shadow-lg ${streamData?.is_live && !error ? 'bg-red-600' : 'bg-stone-600'}`}>
+						<div className="h-2 w-2 bg-white rounded-full" />
+						<span className="text-[10px] font-black text-white tracking-widest">
+							{streamData?.is_live && !error ? 'LIVE' : 'OFFLINE'}
+						</span>
+					</div>
+					<span className="text-xs font-mono text-stone-300 uppercase shadow-sm">Input: Cam-01</span>
 				</div>
 			</div>
 
 			{/* BROADCAST OVERLAY: The floating player card */}
-			<div className="absolute bottom-10 left-10 p-1 bg-white/5 backdrop-blur-3xl rounded-[3rem] border border-white/10 shadow-2xl animate-slide-up">
-				<div className="bg-stone-950/90 rounded-[2.8rem] p-8 flex items-center gap-8 min-w-[550px] border border-white/5">
-					<div className="w-28 h-36 rounded-[2rem] bg-stone-900 border border-white/10 overflow-hidden shadow-2xl relative">
-						<img src={player.photo} className="w-full h-full object-cover grayscale contrast-125 saturate-50" />
-						<div className="absolute inset-x-0 bottom-0 bg-brand-500 h-1" />
-					</div>
-
-					<div className="flex-1 flex flex-col justify-between h-36 py-2">
-						<div>
-							<h3 className="text-3xl font-display font-black text-stone-900 dark:text-white uppercase italic tracking-tighter leading-none mb-1">{player.name}</h3>
-							<div className="flex items-center gap-3">
-								<span className="text-brand-500 text-[9px] font-black uppercase tracking-widest italic">{player.role}</span>
-								<div className="h-1 w-1 rounded-full bg-stone-800" />
-								<span className="text-stone-600 text-[9px] font-black uppercase tracking-widest italic line-through">Base: {fmt(player.basePrice)}</span>
+			<div className="absolute bottom-6 inset-x-0 flex justify-center z-20 pointer-events-none">
+				<div className="p-1 bg-white/5 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-2xl animate-slide-up pointer-events-auto">
+					<div className="bg-stone-950/90 rounded-[1.8rem] p-2 px-10 flex items-center gap-8 min-w-[850px] border border-white/5 h-20">
+						{/* Column 1: Player Details (Left) */}
+						<div className="flex-1 flex flex-col justify-center text-right">
+							<h3 className="text-xl font-display font-black text-white uppercase italic tracking-tight leading-none mb-1">{player.name}</h3>
+							<div className="flex items-center justify-end gap-3 ml-auto whitespace-nowrap">
+								<span className="text-brand-500 text-[11px] font-black uppercase tracking-widest italic">{player.role}</span>
+								<div className="h-1 w-1 rounded-full bg-stone-700" />
+								<span className="text-stone-400 text-[11px] font-black uppercase tracking-widest italic">{player.batting}</span>
+								<div className="h-1 w-1 rounded-full bg-stone-700" />
+								<span className="text-stone-400 text-[11px] font-black uppercase tracking-widest italic">{player.bowling}</span>
 							</div>
 						</div>
 
-						<div className="flex items-end justify-between">
-							<div>
-								<span className="text-[8px] font-black text-stone-600 uppercase tracking-[0.4em] mb-1.5 block leading-none italic">Live Bid</span>
-								<div className="flex flex-col">
-									<div className="text-5xl font-display font-black text-stone-900 dark:text-white italic tracking-tighter leading-none mb-1 transition-all">
-										{currentBid ? fmt(currentBid) : fmt(player.basePrice)}
-									</div>
-									{leadingTeam && (
-										<span className={`text-base font-display font-black ${leadingTeam.color} uppercase italic leading-none tracking-tight`}>
-											{leadingTeam.name}
-										</span>
-									)}
-								</div>
-							</div>
+						{/* Column 2: Centered Pop-out Profile Image */}
+						<div className="w-28 h-28 rounded-full bg-stone-950 border-4 border-brand-500 shadow-[0_0_30px_rgba(234,179,8,0.3)] relative flex-shrink-0 -mt-14 z-30 overflow-hidden">
+							<img src={player.photo} className="w-full h-full object-cover grayscale contrast-125 saturate-50" />
+							<div className="absolute inset-0 bg-gradient-to-t from-brand-500/20 to-transparent" />
+						</div>
 
-							<div className="flex flex-col items-end opacity-40">
-								<div className="text-stone-900 dark:text-white text-5xl font-black italic tracking-tighter leading-none uppercase">Bidx</div>
-								<span className="text-brand-500 text-[7px] font-black tracking-[0.6em] uppercase -mt-2">Broadcast</span>
+						{/* Column 3: Bid Status (Right) */}
+						<div className="flex-1 flex flex-col items-start justify-center">
+							<span className="text-[7px] font-black text-stone-600 uppercase tracking-[0.4em] mb-0.5 block leading-none italic">Live Bid</span>
+							<div className="flex items-baseline gap-3">
+								<div className="text-3xl font-display font-black text-white italic tracking-tighter leading-none transition-all">
+									{currentBid ? fmt(currentBid) : fmt(player.basePrice)}
+								</div>
+								{leadingTeam && (
+									<span className={`text-lg font-display font-black ${leadingTeam.color} uppercase italic leading-none tracking-tight`}>
+										{leadingTeam.name}
+									</span>
+								)}
 							</div>
 						</div>
 					</div>

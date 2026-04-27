@@ -57,4 +57,9 @@ export const auctionService = {
     const { data } = await client.post<Auction>(ENDPOINTS.AUCTIONS.ACCEPT_BID(id))
     return data
   },
+
+  getStream: async (id: number): Promise<{ auction_id: number; is_live: boolean; playback_url: string }> => {
+    const { data } = await client.get<{ auction_id: number; is_live: boolean; playback_url: string }>(ENDPOINTS.AUCTIONS.STREAM(id))
+    return data
+  },
 }
