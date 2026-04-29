@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import ReactPlayer from 'react-player'
 import { auctionService } from '@/api/services/auctionService'
 import {
 	TrendingUp,
@@ -355,51 +354,60 @@ function HandlerControl({ player, currentBid, leadingTeam, status, handleIncreme
 }
 
 function BroadcastView({ player, currentBid, leadingTeam, status, fmt }: any) {
-	const [streamData, setStreamData] = useState<{ is_live: boolean; playback_url: string } | null>(null)
-	const [error, setError] = useState(false)
+	const [key, setKey] = useState(Date.now())
+	const BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000'
+	const streamUrl = `${BASE_URL}/auction/stream`
 
 	useEffect(() => {
-		// As per instructions, default to auction_id 1 for now
-		const auctionId = 1
-		auctionService.getStream(auctionId)
-			.then(data => {
-				setStreamData(data)
-				setError(false)
+		console.log("🚀 [Diagnostics] Attempting to connect to stream:", streamUrl);
+		const abortController = new AbortController();
+
+		fetch(streamUrl, { signal: abortController.signal })
+			.then(async (response) => {
+				console.log("✅ [Diagnostics] Stream connected!");
+				console.log("Headers:", {
+					status: response.status,
+					contentType: response.headers.get('content-type')
+				});
+
+				const reader = response.body?.getReader();
+				if (reader) {
+					console.log("⏳ [Diagnostics] Waiting for first frame data...");
+					const { done, value } = await reader.read();
+					console.log("📦 [Diagnostics] First chunk received! Size:", value?.length, "bytes. Done:", done);
+				} else {
+					console.warn("⚠️ [Diagnostics] Response body is not readable");
+				}
 			})
 			.catch(err => {
-				console.error("Failed to fetch stream data:", err)
-				setError(true)
-			})
-	}, [])
+				if (err.name !== 'AbortError') {
+					console.error("❌ [Diagnostics] Fetch failed:", err.message);
+				}
+			});
+
+		return () => abortController.abort();
+	}, [streamUrl]);
 
 	return (
 		<div className="h-full relative bg-stone-950 rounded-[3rem] overflow-hidden group">
 			{/* Streaming Feed */}
 			<div className="absolute inset-0 bg-stone-900 flex items-center justify-center">
-				{streamData?.is_live && streamData?.playback_url && !error ? (
-					<ReactPlayer
-						url={streamData.playback_url}
-						playing
-						muted
-						width="100%"
-						height="100%"
-						style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover' }}
-						onError={() => setError(true)}
-					/>
-				) : (
-					<div className="flex flex-col items-center gap-4 text-stone-800">
-						<Video size={80} strokeWidth={1} />
-						<span className="font-display text-2xl font-black uppercase italic tracking-widest opacity-20">
-							{error ? 'Stream Error' : 'No Feed Detected'}
-						</span>
-					</div>
-				)}
+				<img
+					key={key}
+					src={streamUrl}
+					className="absolute top-0 left-0 w-full h-full object-cover"
+					onError={(e) => {
+						console.error("Stream connection lost or failed to load. Retrying...")
+						setTimeout(() => setKey(Date.now()), 3000)
+					}}
+					alt="Live Stream"
+				/>
 				{/* Simulated Camera Overlay Details */}
 				<div className="absolute top-10 left-10 flex items-center gap-4 z-10">
-					<div className={`flex items-center gap-2 px-3 py-1 rounded-full animate-pulse shadow-lg ${streamData?.is_live && !error ? 'bg-red-600' : 'bg-stone-600'}`}>
+					<div className="flex items-center gap-2 px-3 py-1 rounded-full animate-pulse shadow-lg bg-red-600">
 						<div className="h-2 w-2 bg-white rounded-full" />
 						<span className="text-[10px] font-black text-white tracking-widest">
-							{streamData?.is_live && !error ? 'LIVE' : 'OFFLINE'}
+							LIVE
 						</span>
 					</div>
 					<span className="text-xs font-mono text-stone-300 uppercase shadow-sm">Input: Cam-01</span>
