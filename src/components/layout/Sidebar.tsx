@@ -28,7 +28,7 @@ export default function Sidebar({ accentColor }: Props) {
     super_admin: 'Super Admin',
     admin:       'Admin',
     owner:       'Team Owner',
-    auctioneer:  'Auctioneer',
+    auctioner:   'Auctioneer',
   }
 
   return (

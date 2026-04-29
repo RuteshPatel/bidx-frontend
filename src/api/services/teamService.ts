@@ -23,9 +23,10 @@ export interface TeamPayload {
 }
 
 export const teamService = {
-  list: async (tenant_id?: number): Promise<Team[]> => {
+  list: async (tenant_id?: number, signal?: AbortSignal): Promise<Team[]> => {
     const { data } = await client.get<Team[]>(ENDPOINTS.TEAMS.LIST, {
-      params: { tenant_id }
+      params: { tenant_id },
+      signal
     })
     return data
   },
